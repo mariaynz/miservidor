@@ -19,14 +19,16 @@ print(f"direccion: {direccion}")
 receive = socket_conexion.recv(1024)
 print(f"receive(en bytes crudos): {receive}")  # bytes crudos del request HTTP (método, path, headers)
 
+''' Esta parte se cambió abajo
 # construir la respuesta HTTP: status line + headers + línea vacía + body
 mensaje_string = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10\r\n\r\nHola mundo"
 
 # convertir el string a bytes, porque los sockets solo mandan/reciben bytes
-mansaje_bytes = mensaje_string.encode()
+mensaje_bytes = mensaje_string.encode()
 
 # enviar la respuesta al cliente por la misma conexión que usamos para leer su request
-socket_conexion.send(mansaje_bytes)
+socket_conexion.send(mensaje_bytes)
+'''
 
 # para leer request, convertirlo de bytes a un string normal de Python
 request = receive.decode()
@@ -34,10 +36,21 @@ request = receive.decode()
 lineas = request.split("\r\n")
 print(f"Receive convertido a string, y guardado por partes en un arreglo: {lineas}")
 
+# guardar status line
 status_line = lineas[0]
+#separar status line
 status_line_split = status_line.split()
 metodo = status_line_split[0]
 path = status_line_split[1]
 print(f"status line: {status_line}")
 print(f"metodo: {metodo}")
 print(f"path: {path}")
+
+if path == "/":
+    mensaje_string = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10\r\n\r\nHola mundo"
+
+else:
+    mensaje_string = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\nContent-Length: 9\r\n\r\nError 404"
+    
+mensaje_bytes = mensaje_string.encode()
+socket_conexion.send(mensaje_bytes)
