@@ -13,11 +13,11 @@ print("Está escuchando!")
 # pausar el programa hasta que un cliente se conecte;
 # accept() regresa un socket nuevo (para esta conexión) y la dirección del cliente
 socket_conexion, direccion = socket1.accept()
-print(direccion)
+print(f"direccion: {direccion}")
 
 # leer hasta 1024 bytes del request que mandó el cliente
 receive = socket_conexion.recv(1024)
-print(receive)  # bytes crudos del request HTTP (método, path, headers)
+print(f"receive(en bytes crudos): {receive}")  # bytes crudos del request HTTP (método, path, headers)
 
 # construir la respuesta HTTP: status line + headers + línea vacía + body
 mensaje_string = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 10\r\n\r\nHola mundo"
@@ -27,3 +27,17 @@ mansaje_bytes = mensaje_string.encode()
 
 # enviar la respuesta al cliente por la misma conexión que usamos para leer su request
 socket_conexion.send(mansaje_bytes)
+
+# para leer request, convertirlo de bytes a un string normal de Python
+request = receive.decode()
+# separar el string y guardarlo en una lista.
+lineas = request.split("\r\n")
+print(f"Receive convertido a string, y guardado por partes en un arreglo: {lineas}")
+
+status_line = lineas[0]
+status_line_split = status_line.split()
+metodo = status_line_split[0]
+path = status_line_split[1]
+print(f"status line: {status_line}")
+print(f"metodo: {metodo}")
+print(f"path: {path}")
